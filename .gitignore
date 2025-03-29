@@ -1,0 +1,15 @@
+Scripts/
+Lib/
+config.json
+pyvenv.cfg
+bot/data
+test.py
+templates
+webhook_cert.pem
+webhook_pkey.pem
+share
+bot/data/data.db
+.idea
+logs.log
+1.py
+*.pyc

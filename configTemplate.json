@@ -1,0 +1,46 @@
+{
+  "telegramConfig": {
+    "apiToken": "<telegram_bot_token>",
+    "botName": "your_bot_name_bot",
+    "botNickname": "HsYrChat机器人",
+    "proxy": {
+      "http": "http://127.0.0.1:7890",
+      "https": "https://127.0.0.1:7890"
+    },
+    "webHook": {
+      "host": "<ip where the bot is running>",
+      "listen": "0.0.0.0",
+      "port": 8773,
+      "sslCert": "./webhook_cert.pem",
+      "sslPRIV": "./webhook_pkey.pem"
+    }
+  },
+  "logging": {
+    "fileName": "./logs.log"
+  },
+  "users": {
+    "defaultFreeTimes": 5,
+    "defaultBalance": 0
+  },
+  "aiConfig": {
+    "OpenAi": {
+      "apiBase": "https://api.example.com/v1/",
+      "key": "sk-xxxx",
+      "modelList": [
+        "gpt-3.5-turbo",
+        "gpt-4"
+      ],
+      "enable": true,
+      "systemPrompt": "你是一个人工智能助手，你更擅长中文和英文的对话。你会为用户提供安全，有帮助，准确的回答。同时，你会拒绝一切涉及恐怖主义，种族歧视，黄色暴力等问题的回答"
+    },
+    "DeepSeek": {
+      "apiBase": "https://api.example.com/v1/",
+      "key": "xxx",
+      "modelList": [
+        "deepseek-chat"
+      ],
+      "enable": true,
+      "systemPrompt": "你是一个人工智能助手，你更擅长中文和英文的对话。你会为用户提供安全，有帮助，准确的回答。同时，你会拒绝一切涉及恐怖主义，种族歧视，黄色暴力等问题的回答"
+    }
+  }
+}
