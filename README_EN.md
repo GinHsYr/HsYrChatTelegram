@@ -1,10 +1,11 @@
-![hsyr](https://github.com/user-attachments/assets/bbb2413e-7853-4821-9333-f795e890ef6a)
+![HsYr](https://github.com/user-attachments/assets/fd6286d3-755b-4e27-963a-a0d10b3c3c7c)
+
 # HsYrChat💬
 HsYrChat Bot is a Telegram bot that supports most AI model APIs (*OpenAI format*), allowing you to enjoy the convenience of AI anytime, anywhere! 🤖  
 
 **[中文](https://github.com/GinHsYr/HsYrChatTelegram/blob/main/README.md)|English**  
-![image](https://github.com/user-attachments/assets/066410c8-5afd-48d5-bed5-a298c4288b3f)
-![image](https://github.com/user-attachments/assets/4be965fa-493b-4b28-bd98-4ca01366aa09)  
+![image](https://github.com/user-attachments/assets/8d95c927-14d5-4278-b1c9-538413cb129c)
+![image](https://github.com/user-attachments/assets/ab1bfbb4-0d56-4f4b-b0c2-1e0fc482039a)
 
 # Features😎
 - [x] Streaming output  
