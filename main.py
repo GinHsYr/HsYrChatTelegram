@@ -1,12 +1,12 @@
 import os
 import sqlite3
+import threading
 
 import flask
 import telebot
 from bot.core.handlers import setupHandlers
 from bot.utils import configLoader
 from bot.utils.logger import logger
-from telebot import apihelper
 
 LOGO = r'''
  __  __           __    __      ____     __                __      
@@ -20,7 +20,7 @@ LOGO = r'''
 print(LOGO)
 print("version 0.1.0")
 
-if not os.path.exists("bot/data"):  #判断是否存在文件夹如果不存在则创建为文件夹
+if not os.path.exists("bot/data"):  # 判断是否存在文件夹如果不存在则创建为文件夹
     os.makedirs("bot/data")
 conn = sqlite3.connect("bot/data/data.db")
 cur = conn.cursor()
@@ -88,17 +88,24 @@ def webhook():
     else:
         flask.abort(403)
 
+
+def run():
+    os.system("streamlit run web/app.py")
+
+
 if __name__ == '__main__':
     # Remove webhook, it fails sometimes the set if there is a previous webhook
     bot.remove_webhook()
     setupHandlers(bot)
 
+    flaskThread = threading.Thread(target=run)
+    flaskThread.start()
     logger.info("Bot is starting...")
     try:
         # You can use the following code to enable polling mode, which can be easily tested.
         bot.infinity_polling(timeout=30)
         # bot.set_webhook(url=f"https://{configs.wHost}:{configs.wPort}{configs.wUrlPath}",
-                        # certificate=open(configs.wSslCert, 'r'))
+        # certificate=open(configs.wSslCert, 'r'))
         # app.run(host=configs.wListen,
         #         port=configs.wPort,
         #         ssl_context=(configs.wSslCert, configs.wSslPRIV),

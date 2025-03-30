@@ -155,6 +155,7 @@ def answerTo(bot, message, user: User):
     except Exception as e:
         chattingList.remove(uid)
         logger.error(e)
+        bot.reply_to(message, f"好像出了点小问题😅\n```详细情况\n{e}```", parse_mode="Markdown")
 
         match = re.search(r"'type':\s*'([^']+)'", str(e))
         if match:
@@ -163,7 +164,19 @@ def answerTo(bot, message, user: User):
                 bot.edit_message_text(chat_id=message.chat.id, message_id=msg.message_id, text="本模型不支持该操作")
             return
 
-        bot.reply_to(message, f"好像出了点小问题😅\n```详细情况\n{e}```", parse_mode="Markdown")
+        match = re.search(r'Error code:\s*(\d+)', str(e))
+        if match:
+            errorCode = match.group(1)
+            if errorCode == "400":
+                bot.edit_message_text(
+                    chat_id=message.chat.id,
+                    message_id=msg.message_id,
+                    text=f"{sendContent}|Tokens used:{totalTokens}",
+                )
+                prompt.addAssistantMessage(completeContent)
+                user.setChatHistory(str(prompt.messages))
+            return
+
         return
     else:
         chattingList.remove(uid)
