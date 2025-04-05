@@ -1,10 +1,12 @@
 import sqlite3
+from decimal import Decimal
 from math import ceil
 
 import pandas as pd
 import streamlit as st
 from bot.utils.logger import logger
-from bot.utils.users import getPaginatedUsers, getTotalUsers, updateUser
+from bot.utils.users import getPaginatedUsers, getTotalUsers, updateUser, getAllUsers
+
 
 def initDB():
     conn = sqlite3.connect('bot/data/data.db')
@@ -80,7 +82,8 @@ def main():
 
     if userId:
         try:
-            userData = usersDF[usersDF['userId'] == userId].iloc[0]
+            allUsers = (getAllUsers(sqlite3.connect("bot/data/data.db")))
+            userData = allUsers[allUsers["userId"] == userId].iloc[0]
 
             with col2:
                 st.write("当前用户信息:")
@@ -111,10 +114,16 @@ def main():
                         index=int(userData['isShared']),
                         format_func=lambda x: x[0]
                     )[1]
-                    newBalance = str(st.number_input("余额", value=float(userData['balance']), step=1.0))
+                    newBalance = st.text_input("余额¥", value=userData['balance'])
                     newChatModel = st.text_input("默认聊天模型", value=userData.get('defaultChatModel', ''))
 
+
                 submitted = st.form_submit_button("提交更新")
+                try:
+                    Decimal(newBalance)
+                except:
+                    st.error("请输入有效的数字")
+                    return
 
                 if submitted:
                     updates = {
@@ -123,7 +132,7 @@ def main():
                         'bannedStatus': newBannedStatus,
                         'sharedCount': newSharedCount,
                         'isShared': newIsShared,
-                        'balance': newBalance,
+                        'balance': str(newBalance),
                         'defaultChatModel': newChatModel
                     }
 
@@ -136,7 +145,7 @@ def main():
                     if success:
                         st.success("用户信息更新成功！")
         except Exception as e:
-            logger.error(e)
+            logger.error(f"e: {e}")
 
 
 if __name__ == "__main__":

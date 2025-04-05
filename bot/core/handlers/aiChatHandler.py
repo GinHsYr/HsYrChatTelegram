@@ -122,7 +122,7 @@ def answerTo(bot, message, user: User):
         for chunk in completion:
             if chunk.choices and chunk.choices[0].delta.content is not None:
                 step += 1
-                completeContent += f"{chunk.choices[0].delta.content}".replace('"', '\\"')
+                completeContent += f"{chunk.choices[0].delta.content}"
                 sendContent = completeContent + f"\n\n> Model:{model}"
                 if step % 40 == 0:
                     # Check if content has changed since last update

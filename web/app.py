@@ -21,7 +21,8 @@ def checkLogin():
             ],
             "管理": [
                 st.Page("pages/manage/userManager.py", title="用户管理"),
-                st.Page("pages/manage/modelManager.py", title="模型管理")
+                st.Page("pages/manage/modelManager.py", title="模型管理"),
+                st.Page("pages/manage/giftCodesManager.py", title="兑换码管理")
             ]
         }
         pg = st.navigation(pages)
