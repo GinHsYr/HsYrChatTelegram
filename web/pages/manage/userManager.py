@@ -1,9 +1,11 @@
 import sqlite3
+import time
 from decimal import Decimal
 from math import ceil
 
 import pandas as pd
 import streamlit as st
+from bot.core.handlers.announceHandler import pubAnnounce
 from bot.utils.logger import logger
 from bot.utils.users import getPaginatedUsers, getTotalUsers, updateUser, getAllUsers
 
@@ -24,6 +26,9 @@ def main():
 
     perPage = 10  # 每页显示的用户数
     totalUsers = getTotalUsers(conn)
+    if totalUsers == 0:
+        st.warning("无用户")
+        return
     totalPages = ceil(totalUsers / perPage)
 
     # 分页导航
@@ -117,7 +122,6 @@ def main():
                     newBalance = st.text_input("余额¥", value=userData['balance'])
                     newChatModel = st.text_input("默认聊天模型", value=userData.get('defaultChatModel', ''))
 
-
                 submitted = st.form_submit_button("提交更新")
                 try:
                     Decimal(newBalance)
@@ -148,5 +152,27 @@ def main():
             logger.error(f"e: {e}")
 
 
+@st.dialog("发公告")
+def editAnn():
+    announcement = st.text_area("公告内容").strip()
+    submit = st.button("发送")
+    if submit:
+        if announcement == "":
+            st.error("内容不可为空")
+        else:
+            start = time.time()
+            pubAnnounce(announcement)
+            end = time.time()
+            logger.info(f"Announcement sent, took {(end - start):.2f}s")
+
+            st.rerun()
+
+def announce():
+    st.divider()
+    if st.button("发公告"):
+        editAnn()
+
+
 if __name__ == "__main__":
     main()
+    announce()

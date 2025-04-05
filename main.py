@@ -6,8 +6,8 @@ import threading
 import flask
 import telebot
 from bot.core.handlers import setupHandlers
-from bot.utils import configLoader
 from bot.utils.logger import logger
+from bot.utils.vars import configs, bot
 
 LOGO = r'''
  __  __           __    __      ____     __                __      
@@ -19,7 +19,7 @@ LOGO = r'''
     \/_/\/_/\/___/     \/_/ \/_/   \/___/   \/_/\/_/\/__/\/_/ \/__/
 '''
 print(LOGO)
-print("version 0.1.0")
+print("version 0.1.1")
 
 config = configparser.ConfigParser()
 config.read("admin.ini")
@@ -80,10 +80,9 @@ CREATE TABLE IF NOT EXISTS giftCodes (
 conn.commit()
 conn.close()
 app = flask.Flask(__name__)
-configs = configLoader.Config()
+
 # You can use the proxy by enabling the following line of code
 # apihelper.proxy = {'https': configs.proxyHttps, "http": configs.proxyHttp}
-bot = telebot.TeleBot(configs.botApiToken)
 
 
 @app.route(configs.wUrlPath, methods=['POST'])
