@@ -4,52 +4,17 @@ from math import ceil
 import pandas as pd
 import streamlit as st
 from bot.utils.logger import logger
-
+from bot.utils.users import getPaginatedUsers, getTotalUsers, updateUser
 
 def initDB():
     conn = sqlite3.connect('bot/data/data.db')
     return conn
 
 
-# 获取所有用户数据
-def getAllUsers(conn):
-    df = pd.read_sql('SELECT * FROM users', conn)
-    return df
-
-
-# 获取分页用户数据
-def getPaginatedUsers(conn, page, perPage):
-    offset = (page - 1) * perPage
-    query = f'SELECT * FROM users LIMIT {perPage} OFFSET {offset}'
-    df = pd.read_sql(query, conn)
-    return df
-
-
-# 获取用户总数
-def getTotalUsers(conn):
-    cur = conn.cursor()
-    cur.execute('SELECT COUNT(*) FROM users')
-    return cur.fetchone()[0]
-
-
-# 更新用户数据
-def updateUser(conn, user_id, column, new_value):
-    try:
-        cur = conn.cursor()
-        cur.execute(f"UPDATE users SET {column} = ? WHERE userId = ?", (new_value, user_id))
-        conn.commit()
-        return True
-    except Exception as e:
-        st.error(f"更新失败: {e}")
-        return False
-
-
 # 主应用
 def main():
-    st.set_page_config(page_title="用户管理后台", layout="wide")
-    st.title("用户管理后台")
-
     conn = initDB()
+    st.title("用户管理")
 
     # 分页设置
     if 'page' not in st.session_state:
@@ -63,7 +28,7 @@ def main():
     col1, col2, col3, col4 = st.columns([1, 4, 1, 1])
 
     with col1:
-        goto_page = st.number_input(
+        gotoPage = st.number_input(
             f"第{st.session_state.page}/{totalPages}页\n(总计{totalUsers}用户)",
             min_value=1,
             max_value=totalPages,
@@ -71,12 +36,15 @@ def main():
             step=1,
             key="gotoPageInput",
         )
-        if goto_page != st.session_state.page:
-            st.session_state.page = goto_page
+        if gotoPage != st.session_state.page:
+            st.session_state.page = gotoPage
             st.rerun()
 
     # 获取当前页的用户数据
     usersDF = getPaginatedUsers(conn, st.session_state.page, perPage)
+    usersDF['registrationTime'] = usersDF['registrationTime'].apply(
+        lambda x: pd.to_datetime(pd.to_numeric(x), unit='s').strftime('%Y-%m-%d %H:%M:%S')
+    )
 
     # 显示用户表格
     st.dataframe(usersDF, use_container_width=True, selection_mode="single-row", on_select="ignore",

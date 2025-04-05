@@ -1,3 +1,4 @@
+import configparser
 import os
 import sqlite3
 import threading
@@ -19,6 +20,14 @@ LOGO = r'''
 '''
 print(LOGO)
 print("version 0.1.0")
+
+config = configparser.ConfigParser()
+config.read("admin.ini")
+if not config.has_section("Admin"):
+    config.add_section("Admin")
+    config.set("Admin", "account", "admin")
+    config.set("Admin", "password", "98304d615e857296f6d556386997baab")
+    config.write(open("admin.ini", "w"))
 
 if not os.path.exists("bot/data"):  # 判断是否存在文件夹如果不存在则创建为文件夹
     os.makedirs("bot/data")
@@ -53,8 +62,7 @@ CREATE TABLE IF NOT EXISTS modelPricing (
     -- 按请求计费模式
     perRequestPrice TEXT,
     
-    currency TEXT DEFAULT 'CNY',
-    unitScale INTEGER DEFAULT 6, -- 单位缩放(6表示百万tokens)
+    unitScale INTEGER DEFAULT 'M' CHECK(modelPricing.unitScale IN ('M','k')),-- 单位缩放(M百万 k千)
     isActive INTEGER DEFAULT 1 CHECK(isActive IN (0,1)),
     updatedAt TEXT DEFAULT (datetime('now','localtime'))
 );

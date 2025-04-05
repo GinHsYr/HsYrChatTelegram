@@ -1,7 +1,42 @@
 import sqlite3
 import time
 
+import pandas as pd
+from bot.utils.logger import logger
 from bot.utils.vars import default
+
+
+# 获取所有用户数据
+def getAllUsers(conn):
+    df = pd.read_sql('SELECT * FROM users', conn)
+    return df
+
+
+# 获取分页用户数据
+def getPaginatedUsers(conn, page, perPage):
+    offset = (page - 1) * perPage
+    query = f'SELECT * FROM users LIMIT {perPage} OFFSET {offset}'
+    df = pd.read_sql(query, conn)
+    return df
+
+
+# 获取用户总数
+def getTotalUsers(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM users')
+    return cur.fetchone()[0]
+
+
+# 更新用户数据
+def updateUser(conn, userId, column, newValue):
+    try:
+        cur = conn.cursor()
+        cur.execute(f"UPDATE users SET {column} = ? WHERE userId = ?", (newValue, userId))
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"更新失败: {e}")
+        return False
 
 
 class User:

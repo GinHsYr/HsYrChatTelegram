@@ -1,18 +1,21 @@
-![HsYr](https://github.com/user-attachments/assets/fd6286d3-755b-4e27-963a-a0d10b3c3c7c)
+![HsYr](imgs/hsyr.png)
+
 
 # HsYrChat💬
 HsYrChat Bot is a Telegram bot that supports most AI model APIs (*OpenAI format*), allowing you to enjoy the convenience of AI anytime, anywhere! 🤖  
 
 **[中文](https://github.com/GinHsYr/HsYrChatTelegram/blob/main/README.md)|English**  
-![image](https://github.com/user-attachments/assets/8d95c927-14d5-4278-b1c9-538413cb129c)
-![image](https://github.com/user-attachments/assets/ab1bfbb4-0d56-4f4b-b0c2-1e0fc482039a)
+![image](imgs/example1.png)
+![image](imgs/example2.png)
+<img alt="web1.png" height="300" src="imgs/web1.png" width="600"/>
 
 # Features😎
 - [x] Streaming output  
-- [x] Chain-of-thought format support
+- [x] Chain-of-thought format support  
 - [x] Contextual memory  
-- [x] Image recognition support
-- [x] Token and balance calculation
+- [x] Image recognition support  
+- [x] Token and balance calculation  
+- [x] Web Management Backend  
 - [ ] More features coming soon...
 
 # Deployment😉
@@ -85,15 +88,13 @@ Start the Bot:
     \/_/\/_/\/___/     \/_/ \/_/   \/___/   \/_/\/_/\/__/\/_/ \/__/
 
 version 0.1.0
-2025-03-22 19:34:22,972 - bot.utils.logger - INFO - Bot is starting...
+2025-04-05 08:45:52,682 - bot.utils.logger - INFO - Bot is starting...
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://192.168.1.2:8501
 ```
-At this point, the bot is running normally, but it will not handle balance deduction yet, so you also need to configure the pricing for each model.
-The program will create an SQLite database at bot/data/data.db, which you can edit using any database viewer.
-Now the bot is fully configured. Have fun and enjoy!
-
-
-
-
-
-
-
+At this point, the Bot can work normally and automatically pull up the default browser to open the management backend.  
+(The default account is "admin", the default password is "HsYrBot")You can now configure the model's price information.  
+At this point, the configuration is complete.

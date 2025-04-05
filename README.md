@@ -1,12 +1,13 @@
-![HsYr](https://github.com/user-attachments/assets/fd6286d3-755b-4e27-963a-a0d10b3c3c7c)
+![HsYr](imgs/hsyr.png)
 
 # HsYrChat💬
 HsYrChat机器人是一款支持大部分AI模型API(*OpenAI格式*)的Telegram机器人，让你随时随地享受AI带来的便利！🤖  
 
 
 **中文|[English](https://github.com/GinHsYr/HsYrChatTelegram/blob/main/README_EN.md)**  
-![image](https://github.com/user-attachments/assets/8d95c927-14d5-4278-b1c9-538413cb129c)
-![image](https://github.com/user-attachments/assets/ab1bfbb4-0d56-4f4b-b0c2-1e0fc482039a)
+![image](imgs/example1.png)
+![image](imgs/example2.png)
+<img alt="web1.png" height="300" src="imgs/web1.png" width="600"/>
 
 
 # Features😎
@@ -15,6 +16,7 @@ HsYrChat机器人是一款支持大部分AI模型API(*OpenAI格式*)的Telegram�
  - [x] 上下文支持  
  - [x] 图片识别支持  
  - [x] Token与余额的计算  
+ - [x] Web管理后台  
  - [ ] 敬请期待
 
 # 部署😉
@@ -88,9 +90,13 @@ aiConfig中的提供商可以随意增添, 机器人会自动识别(*当且仅�
     \/_/\/_/\/___/     \/_/ \/_/   \/___/   \/_/\/_/\/__/\/_/ \/__/
 
 version 0.1.0
-2025-03-22 19:34:22,972 - bot.utils.logger - INFO - Bot is starting...
+2025-04-05 08:45:52,682 - bot.utils.logger - INFO - Bot is starting...
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://192.168.1.2:8501
 ```
 
-此时, Bot可以正常工作, **但无法进行扣费行为**, 所以我们还需配置模型的价格  
-程序将在```bot/data/data.db```创建sqlite数据库, 您可以用数据库浏览软件对其进行编辑
-至此, 机器人配置完成, 请愉快的玩耍吧!
+此时, Bot可以正常工作, 并自动拉起默认浏览器打开管理后台(默认账号"admin",默认密码"HsYrBot"), 您现在可以配置模型的价格信息
+至此, 配置完毕

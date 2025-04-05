@@ -186,10 +186,16 @@ def answerTo(bot, message, user: User):
 
         elif payment == "balance":
             price = ModelPrice(actualModel)
+            unitScale = price.unitScale
+            if unitScale.lower() == "m":
+                unitScale = Decimal(1000000)
+            elif unitScale.lower() == "k":
+                unitScale = Decimal(1000)
+
             finalPrice = Decimal(0)
             if price.pricingStrategy == "TOKEN":
-                finalPrice = (Decimal(promptTokens) / Decimal(1000000)) * Decimal(price.promptPrice) + \
-                             Decimal(completionTokens) / Decimal(1000000) * Decimal(price.completionPrice)
+                finalPrice = (Decimal(promptTokens) / unitScale) * Decimal(price.promptPrice) + \
+                             (Decimal(completionTokens) / unitScale) * Decimal(price.completionPrice)
             elif price.pricingStrategy == "REQUEST":
                 finalPrice = Decimal(price.perRequestPrice)
             user.setBalance(str(Decimal(user.balance) - finalPrice))
