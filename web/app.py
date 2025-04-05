@@ -34,7 +34,6 @@ def checkLogin():
             md5 = hashlib.md5()
             md5.update(passwordInput.encode("UTF-8"))
             passwordInputHash = md5.hexdigest()
-            print(passwordInputHash)
             if accountInput == account and passwordInputHash == password:
                 controller.set('login', password)
                 logger.warning("管理后台已登录")

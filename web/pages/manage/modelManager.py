@@ -2,11 +2,64 @@ import sqlite3
 from decimal import Decimal
 
 import streamlit as st
-from bot.utils.modelPrice import getAllModelPrices, delModel, updateModelPricing, ModelPrice
+from bot.utils.modelPrice import getAllModelPrices, delModel, updateModelPricing, ModelPrice, addModel
+
+
+@st.dialog("编辑模型信息")
+def modelDialog(edit: bool, modelName="new-model"):
+    modelP = ModelPrice(modelName).toDict()
+    newModelName = st.text_input("模型名称", modelName)
+    promptPrice, completionPrice, perReqPrice, unitScale = "0.0", "0.0", "0.0", "M"
+
+    strategy = st.selectbox("计价策略", ("按Token计费", "按请求次数计费"),
+                            index=0 if modelP["strategy"] == "TOKEN" else 1)
+    if strategy == "按Token计费":
+        unitScale = st.selectbox("单位", ("每百万Token", "每千Token"),
+                                 index=0 if modelP["unitScale"] == 'M' else 1)
+        promptPrice = st.text_input(f"输入价格/{unitScale}", value=(modelP["promptPrice"]))
+        completionPrice = st.text_input(f"输出价格/{unitScale}", value=(modelP["completionPrice"]))
+        try:
+            Decimal(promptPrice)
+            Decimal(completionPrice)
+        except:
+            st.error("请输入有效的数字")
+            return
+    else:
+        perReqPrice = st.text_input("单次请求价格", value=(modelP["perRequestPrice"]))
+        try:
+            Decimal(perReqPrice)
+        except:
+            st.error("请输入有效的数字")
+            return
+    active = st.toggle("激活", value=modelP["isActive"],
+                       help="激活后才会使用该模型定价, 不激活则无法进行扣费")
+    strategy = "TOKEN" if strategy == "按Token计费" else "REQUEST"
+    unitScale = "M" if unitScale == "每百万Token" else "k"
+    active = 1 if active else 0
+
+    deleteButton, submitButton = st.columns(2, gap="small")
+    if edit:
+        with deleteButton:
+            if st.button("删除模型", type="primary"):
+                delModel(modelName)
+                st.rerun()
+    with submitButton:
+        if st.button("提交"):
+            if edit:
+                updateModelPricing(sqlite3.connect("bot/data/data.db"), newModelName, strategy,
+                                   str(promptPrice), str(completionPrice),
+                                   str(perReqPrice), unitScale, active)
+            else:
+                addModel(sqlite3.connect("bot/data/data.db"), newModelName, strategy, str(promptPrice),
+                         str(completionPrice),
+                         str(perReqPrice), unitScale, active)
+            st.success("操作成功!")
+            st.rerun(scope="app")
 
 
 def main():
     st.title("📊 AI模型信息")
+
     models = getAllModelPrices()
 
     col1, col2 = st.columns(2)
@@ -14,6 +67,8 @@ def main():
         st.metric("总模型数量", len(models), border=True)
     with col2:
         st.metric("活跃模型数量", sum(1 for m in models if m["isActive"]), border=True)
+    if st.button("添加模型"):
+        modelDialog(False)
     st.divider()
 
     if not models:
@@ -69,52 +124,7 @@ def main():
                 else:
                     st.badge("模型未激活", color="gray")
                 if st.button("编辑", key=model["model"]):
-                    @st.dialog("编辑模型信息")
-                    def dialog(modelName):
-                        modelP = ModelPrice(modelName).toDict()
-                        newModelName = st.text_input("模型名称", modelName)
-                        promptPrice, completionPrice, perReqPrice, unitScale = "0.0", "0.0", "0.0", "M"
-
-                        strategy = st.selectbox("计价策略", ("按Token计费", "按请求次数计费"),
-                                                index=0 if modelP["strategy"] == "TOKEN" else 1)
-                        if strategy == "按Token计费":
-                            unitScale = st.selectbox("单位", ("每百万Token", "每千Token"),
-                                                     index=0 if modelP["unitScale"] == 'M' else 1)
-                            promptPrice = st.text_input(f"输入价格/{unitScale}", value=(modelP["promptPrice"]))
-                            completionPrice = st.text_input(f"输出价格/{unitScale}", value=(modelP["completionPrice"]))
-                            try:
-                                Decimal(promptPrice)
-                                Decimal(completionPrice)
-                            except:
-                                st.error("请输入有效的数字")
-                                return
-                        else:
-                            perReqPrice = st.text_input("单次请求价格", value=(modelP["perRequestPrice"]))
-                            try:
-                                Decimal(perReqPrice)
-                            except:
-                                st.error("请输入有效的数字")
-                                return
-                        active = st.toggle("激活", value=modelP["isActive"],
-                                           help="激活后才会使用该模型定价, 不激活则无法进行扣费")
-                        strategy = "TOKEN" if strategy == "按Token计费" else "REQUEST"
-                        unitScale = "M" if unitScale == "每百万Token" else "k"
-                        active = 1 if active else 0
-
-                        deleteButton, submitButton = st.columns(2, gap="small")
-                        with deleteButton:
-                            if st.button("删除模型", type="primary"):
-                                delModel(modelName)
-                                st.rerun()
-                        with submitButton:
-                            if st.button("提交"):
-                                updateModelPricing(sqlite3.connect("bot/data/data.db"), newModelName, strategy,
-                                                   str(promptPrice), str(completionPrice),
-                                                   str(perReqPrice), unitScale, active)
-                                st.success("修改成功!")
-                                st.rerun(scope="app")
-
-                    dialog(model["model"])
+                    modelDialog(True, model["model"])
 
 
 if __name__ == "__main__":
