@@ -3,11 +3,22 @@ import hashlib
 import sqlite3
 from datetime import datetime, timedelta
 
+import pandas as pd
 import streamlit as st
 from bot.utils.logger import logger
 from bot.utils.users import getAllUsers
 from web.stLocalStorage import StLocalStorage
 
+
+def getCumulativeUserData(userData):
+    userData['registrationTime'] = pd.to_datetime(userData['registrationTime'].astype(int), unit='s')
+    userData['date'] = userData['registrationTime'].dt.date
+    userData = userData.sort_values(by='date')
+
+    dailyNew = userData.groupby('date').size().reset_index(name='新增用户数')
+    # 累计总数
+    dailyNew['累计用户数'] = dailyNew['新增用户数'].cumsum()
+    return dailyNew
 
 @st.fragment(run_every=10)
 def metricData():
@@ -24,6 +35,9 @@ def metricData():
         if timestampY <= int(regTime) < timestamp:
             userIncrease += 1
     col1.metric("总用户数", len(userData), f"+{userIncrease}", border=True, help="用户增加数为昨日新增")
+
+    cumulativeData = getCumulativeUserData(userData)
+    col1.line_chart(cumulativeData.set_index('date')[['累计用户数']])
 
 
 def sidebar():
