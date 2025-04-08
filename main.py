@@ -19,7 +19,7 @@ LOGO = r'''
     \/_/\/_/\/___/     \/_/ \/_/   \/___/   \/_/\/_/\/__/\/_/ \/__/
 '''
 print(LOGO)
-print("version 0.1.1")
+print("version 0.2.1")
 
 config = configparser.ConfigParser()
 config.read("admin.ini")
@@ -105,8 +105,8 @@ if __name__ == '__main__':
     bot.remove_webhook()
     setupHandlers(bot)
 
-    flaskThread = threading.Thread(target=run)
-    flaskThread.start()
+    # flaskThread = threading.Thread(target=run)
+    # flaskThread.start()
     logger.info("Bot is starting...")
     try:
         # You can use the following code to enable polling mode, which can be easily tested.

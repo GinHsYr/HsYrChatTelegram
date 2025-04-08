@@ -16,8 +16,13 @@ HsYrChat Bot is a Telegram bot that supports most AI model APIs (*OpenAI format*
 - [x] Image recognition support  
 - [x] Token and balance calculation  
 - [x] Web Management Backend  
+- [x] Group chat support  
 - [ ] More features coming soon...
 
+You can get answers by `@yourBotName` in the group or **reply the bot's message**  
+(please **set Privacy mode to off** in BotFather first and give the bot the proper permissions in the group)  
+
+---
 # Deployment😉
 ```> pip3 install -r requirements.txt```
 Edit the configTemplate.json file:

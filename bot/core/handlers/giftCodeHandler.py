@@ -14,10 +14,10 @@ def giftCodeHandler(bot, message, code):
         exist, amount, isUsed = giftCodeState["exist"], giftCodeState["amount"], giftCodeState["isUsed"]
 
         if not exist:
-            bot.send_message(uid, "该兑换码不存在")
+            bot.send_message(message.chat.id, "该兑换码不存在")
             return
         if isUsed:
-            bot.send_message(uid, "该兑换码已被使用")
+            bot.send_message(message.chat.id, "该兑换码已被使用")
             return
 
         user.setBalance(str(Decimal(user.balance) + Decimal(amount)))

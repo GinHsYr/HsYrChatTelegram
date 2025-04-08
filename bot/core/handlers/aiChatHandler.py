@@ -18,11 +18,17 @@ from telebot import types
 
 
 def questionMessageHandler(bot):
-    @bot.message_handler(content_types=["text", "photo"], chat_types="private")
+    @bot.message_handler(content_types=["text", "photo"])
     def answer(message):
         uid = message.from_user.id
         user = User(uid)
         configs = configLoader.Config()
+        if message.chat.type in ["group", "supergroup"]:
+            if message.reply_to_message is not None:
+                if not message.reply_to_message.json["from"]["username"] == configs.botName:
+                    return
+            elif not message.text.startswith(f"@{configs.botName}"):
+                return
         logger.info(f"user {uid} send message")
         if not user.isRegistered():
             bot.reply_to(message, "您尚未注册, 请发送 /start 命令注册")
