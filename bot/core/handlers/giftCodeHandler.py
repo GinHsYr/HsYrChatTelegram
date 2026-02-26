@@ -26,7 +26,7 @@ def giftCodeHandler(bot, message, code):
         bot.send_message(uid, f"成功使用兑换码!余额+ ¥{amount}\n剩余余额:¥{user.balance}")
         logger.info(f"user {uid} use gift code {code}")
     finally:
-        giftCodeInputtingList.remove(uid)
+        giftCodeInputtingList.discard(uid)
 
 
 def __checkGiftCode(code):
@@ -48,6 +48,7 @@ def __checkGiftCode(code):
         'isUsed': None,
     }
 
+    conn = None
     try:
         conn = sqlite3.connect("bot/data/data.db")
         cursor = conn.cursor()
@@ -85,6 +86,7 @@ def addGiftCodes(giftList: list[dict]):
         logger.warning("Failed to add redemption codes in batches: the list is empty")
         return
 
+    conn = None
     try:
         conn = sqlite3.connect("bot/data/data.db")
         cursor = conn.cursor()
@@ -149,7 +151,8 @@ def getAllGiftCodes() -> pd.DataFrame:
             {"code": "yyy", "amount": "5.0", "isUsed": 1},
         ]
     """
-    codes = pd.DataFrame
+    codes = pd.DataFrame()
+    conn = None
     try:
         conn = sqlite3.connect("bot/data/data.db")
 
