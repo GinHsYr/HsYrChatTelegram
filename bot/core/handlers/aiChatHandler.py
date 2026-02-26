@@ -24,10 +24,12 @@ def questionMessageHandler(bot):
         user = User(uid)
         configs = configLoader.Config()
         if message.chat.type in ["group", "supergroup"]:
+            trigger_text = message.text or message.caption or ""
             if message.reply_to_message is not None:
-                if not message.reply_to_message.json["from"]["username"] == configs.botName:
+                reply_username = message.reply_to_message.from_user.username
+                if reply_username != configs.botName:
                     return
-            elif not message.text.startswith(f"@{configs.botName}"):
+            elif not trigger_text.startswith(f"@{configs.botName}"):
                 return
         logger.info(f"user {uid} send message")
         if not user.isRegistered():
@@ -74,6 +76,7 @@ def answerTo(bot, message, user: User):
     completionTokens, promptTokens, totalTokens = 0, 0, 0
     actualModel = ""  # 实际调用模型
     url = ""  # 用户发送图片的url
+    msg = None
 
     try:
         provider, model = str(user.defaultChatModel).split(":")
@@ -109,7 +112,7 @@ def answerTo(bot, message, user: User):
                 prompt.addUserMessage(caption).addImage(dataUrl)
             else:
                 bot.reply_to(message, "请添加描述~")
-                chattingList.remove(uid)
+                chattingList.discard(uid)
                 return
         else:
             prompt.addUserMessage(message.text)
@@ -159,21 +162,21 @@ def answerTo(bot, message, user: User):
         prompt.addAssistantMessage(completeContent)
         user.setChatHistory(str(prompt.messages))
     except Exception as e:
-        chattingList.remove(uid)
+        chattingList.discard(uid)
         logger.error(e)
         bot.reply_to(message, f"好像出了点小问题😅\n```详细情况\n{e}```", parse_mode="Markdown")
 
         match = re.search(r"'type':\s*'([^']+)'", str(e))
         if match:
             typeValue = match.group(1)
-            if typeValue == "BadRequest":
+            if typeValue == "BadRequest" and msg is not None:
                 bot.edit_message_text(chat_id=message.chat.id, message_id=msg.message_id, text="本模型不支持该操作")
             return
 
         match = re.search(r'Error code:\s*(\d+)', str(e))
         if match:
             errorCode = match.group(1)
-            if errorCode == "400":
+            if errorCode == "400" and msg is not None:
                 bot.edit_message_text(
                     chat_id=message.chat.id,
                     message_id=msg.message_id,
@@ -185,7 +188,7 @@ def answerTo(bot, message, user: User):
 
         return
     else:
-        chattingList.remove(uid)
+        chattingList.discard(uid)
         if payment == "freeTimes":
             user.setFreeTimes(user.freeTimes - 1)
             logger.info(f"user {uid} deduct freeTimes 1, remaining freeTimes {user.freeTimes}")
